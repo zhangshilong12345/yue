@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+<!--&lt;!&ndash;//隐藏域。监控输入的关键词进行传值到后台&ndash;&gt;-->
+<!--<input type="hidden" name="keyword" value="" id="input-name"/>-->
+<!--&lt;!&ndash;...&ndash;&gt;-->
+<!--&lt;!&ndash;//搜索框&ndash;&gt;-->
+<!--<input type="text" id="search_key" size="30" class="qsbox" placeholder="名称、价格...">-->
+<!--<input type="submit" class="btn" onclick="ajax_get_table('search-form2',1)" value="搜索">-->
+<!--&lt;!&ndash;...&ndash;&gt;-->
+<!--&lt;!&ndash;//用来接收搜索后数据显示的区域&ndash;&gt;-->
+<!--<div id="flexigrid" cellpadding="0" cellspacing="0" border="0">-->
+<!--</div>-->
+<form action="fens" method="post">
+    <select style="width: 170px;height: 25px">
+        <option>商品图片</option>
+        <option>爱情图片</option>
+        <option>食品图片</option>
+    </select>
+    <input type="text" href="" value="查询"><button type="submit" class="btn btn-primary" onclick="func1()">查询</button>
+</form>
+<table class="table">
+    <tr>
+        <td>pid</td>
+        <td>uid</td>
+        <td>分类</td>
+        <td>标题</td>
+        <td>图片</td>
+        <td>评论</td>
+        <td>时间</td>
+        <td>主题</td>
+        <td>操作</td>
+    </tr>
+    {foreach $list as $k=>$value}
+    <tr>
+        <td>{$value.pid}</td>
+        <td>{$value.uid}</td>
+        <td>{$value.fen}</td>
+        <td>{$value.title}</td>
+        <td><img style="width: 70px; height: 70px" src="{$value.img}"></td>
+        <td>{$value.ping}</td>
+        <td>{$value.date}</td>
+        <td>{$value.username}</td>
+        <td>
+            <a href="">新增</a>
+            <a href="">编辑</a>
+            <a href="">删除</a>
+        </td>
+    </tr>
+    {/foreach}
+</table>
+{$list|raw}
+</body>
+<script type="text/javascript">
+    $(document).ready(function () {
+        ajax_get_table('search-form2', 1);
+    });
+
+    //ajax 抓取页面
+    function ajax_get_table(tab, page) {
+        //去掉空格，并获取数据
+        var search_key=$.trim($('#search_key').val());
+        //设置表单字段的值
+        $('#input-name').val(search_key);
+        //当前页面 保存为全局变量
+        cur_page = page;
+        $.ajax({
+            type: "POST",
+            url: "/index.php/Admin/goods/ajaxindex/p/" + page,//+tab,
+            // 你的formid
+            data: $('#' + tab).serialize(),
+            success: function (data) {
+                //flexigrid是成功返回，接收数据显示的区域
+                $("#flexigrid").html('');
+                $("#flexigrid").append(data);
+                // 表格行点击选中切换
+                $('#flexigrid > table>tbody >tr').click(function () {
+                    $(this).toggleClass('trSelected');
+                });
+            }
+        });
+    }
+</script>
+</html>
